@@ -8,6 +8,7 @@ import UserAvatar from "./UserAvatar";
 function LeftSidebar() {
   const { data: session } = useSession();
   const user = session?.user;
+  console.log(user);
 
   return (
     <div className="flex flex-col space-y-6 pt-4 px-16 items-start gap-[530px]">
