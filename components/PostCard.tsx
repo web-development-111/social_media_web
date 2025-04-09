@@ -1,5 +1,5 @@
 "use client";
-import { getPosts } from "@/actions/post.action";
+import { getPosts, toggleLike } from "@/actions/post.action";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Card, CardContent } from "./ui/card";
@@ -56,7 +56,7 @@ function PostCard({
       setIsLiking(true);
       setHasLiked((prev) => !prev);
       setOptimisticLikes((prev) => prev + (hasLiked ? -1 : 1));
-      //   await toggleLike(post.id);
+      await toggleLike(post.id);
     } catch (error) {
       setOptimisticLikes(post._count.likes);
       setHasLiked(post.likes.some((like) => like.userId === dbUserId));
