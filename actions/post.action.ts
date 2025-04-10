@@ -190,3 +190,36 @@ export async function toggleLike(postId: string) {
     return { success: false, error: "Failed to toggle like" };
   }
 }
+export async function updatePost(
+  postId: string,
+  content: string,
+  imageUrl: string
+) {
+  try {
+    const userId = await getDbUserId();
+    if (!userId) throw new Error("Unauthorized");
+
+    // Check if the post exists and belongs to the user
+    const existingPost = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+    if (!existingPost) throw new Error("Post not found");
+    if (existingPost.authorId !== userId) throw new Error("Forbidden");
+
+    // Update the post
+    const updatedPost = await prisma.post.update({
+      where: { id: postId },
+      data: {
+        content: content || null,
+        image: imageUrl || null,
+      },
+    });
+
+    revalidatePath("/"); // Revalidate the home page
+    return { success: true, post: updatedPost };
+  } catch (error) {
+    console.error("Failed to update post: ", error);
+    return { success: false, error: "Failed to update post" };
+  }
+}
