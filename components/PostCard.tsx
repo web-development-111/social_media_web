@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import UpdatePost from "./UpdatePost";
 
 type Posts = Awaited<ReturnType<typeof getPosts>>;
 type Post = Posts[number];
@@ -146,6 +147,12 @@ function PostCard({
                         <DialogHeader>
                           <DialogTitle>Edit Post</DialogTitle>
                         </DialogHeader>
+                        <UpdatePost
+                          postId={post.id}
+                          initialContent={post.content || ""}
+                          initialImageUrl={post.image || ""}
+                          onClose={() => setIsDialogOpen(false)}
+                        />
                       </DialogContent>
                     </Dialog>
                     {/* DELETE DIALOUGE */}
