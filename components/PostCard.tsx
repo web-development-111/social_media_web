@@ -1,18 +1,18 @@
 "use client";
-import { getPosts, toggleLike } from "@/actions/post.action";
+import { deletePost, getPosts, toggleLike } from "@/actions/post.action";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Card, CardContent } from "./ui/card";
 import Link from "next/link";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { formatDistanceToNow } from "date-fns";
+import { DeleteAlertDialog } from "./DeleteAlertDialogue";
 import { Button } from "./ui/button";
 import {
   EditIcon,
   HeartIcon,
   LogInIcon,
   MessageCircleIcon,
-  SendIcon,
 } from "lucide-react";
 import { Textarea } from "./ui/textarea";
 import Image from "next/image";
@@ -42,8 +42,9 @@ function PostCard({
   const { data: session } = useSession();
   const user = session?.user;
   const [newComment, setNewComment] = useState("");
-  const [isCommenting, setIsCommenting] = useState(false);
+  // const [isCommenting, setIsCommenting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [hasLiked, setHasLiked] = useState(
     post.likes.some((like) => like.userId === dbUserId)
   );
@@ -67,36 +68,37 @@ function PostCard({
     }
   };
 
-  const handleAddComment = async () => {
-    if (!newComment.trim() || isCommenting) return;
+  // const handleAddComment = async () => {
+  //   if (!newComment.trim() || isCommenting) return;
+  //   try {
+  //     setIsCommenting(true);
+  //     const result = await createComment(post.id, newComment);
+  //     if (result?.success) {
+  //       toast.success("Comment posted successfully");
+  //       setNewComment("");
+  //     }
+  //   } catch (error) {
+  //     toast.error("Failed to add comment");
+  //     throw error;
+  //   } finally {
+  //     setIsCommenting(false);
+  //   }
+  // };
+
+  const handleDeletePost = async () => {
+    if (isDeleting) return;
     try {
-      setIsCommenting(true);
-      //   const result = await createComment(post.id, newComment);
-      //   if (result?.success) {
-      //     toast.success("Comment posted successfully");
-      //     setNewComment("");
-      //   }
+      setIsDeleting(true);
+      const result = await deletePost(post.id);
+      if (result.success) toast.success("Post deleted successfully");
+      else throw new Error(result.error);
     } catch (error) {
-      toast.error("Failed to add comment");
+      toast.error("Failed to delete post");
       throw error;
     } finally {
-      setIsCommenting(false);
+      setIsDeleting(false);
     }
   };
-
-  //     if (isDeleting) return;
-  //     try {
-  //       setIsDeleting(true);
-  //       //   const result = await deletePost(post.id);
-  //       //   if (result.success) toast.success("Post deleted successfully");
-  //       //   else throw new Error(result.error);
-  //     } catch (error) {
-  //       toast.error("Failed to delete post");
-  //       throw error;
-  //     } finally {
-  //       setIsDeleting(false);
-  //     }
-  //   };
 
   return (
     <Card className="overflow-hidden">
@@ -156,6 +158,10 @@ function PostCard({
                       </DialogContent>
                     </Dialog>
                     {/* DELETE DIALOUGE */}
+                    <DeleteAlertDialog
+                      isDeleting={isDeleting}
+                      onDelete={handleDeletePost}
+                    />
                   </div>
                 )}
               </div>
@@ -269,7 +275,7 @@ function PostCard({
                       onChange={(e) => setNewComment(e.target.value)}
                       className="min-h-[80px] resize-none"
                     />
-                    <div className="flex justify-end mt-2">
+                    {/* <div className="flex justify-end mt-2">
                       <Button
                         size="sm"
                         onClick={handleAddComment}
@@ -285,7 +291,7 @@ function PostCard({
                           </>
                         )}
                       </Button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               ) : (
