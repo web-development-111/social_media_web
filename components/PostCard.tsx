@@ -1,5 +1,10 @@
 "use client";
-import { deletePost, getPosts, toggleLike } from "@/actions/post.action";
+import {
+  createComment,
+  deletePost,
+  getPosts,
+  toggleLike,
+} from "@/actions/post.action";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Card, CardContent } from "./ui/card";
@@ -13,6 +18,7 @@ import {
   HeartIcon,
   LogInIcon,
   MessageCircleIcon,
+  SendIcon,
 } from "lucide-react";
 import { Textarea } from "./ui/textarea";
 import Image from "next/image";
@@ -42,7 +48,7 @@ function PostCard({
   const { data: session } = useSession();
   const user = session?.user;
   const [newComment, setNewComment] = useState("");
-  // const [isCommenting, setIsCommenting] = useState(false);
+  const [isCommenting, setIsCommenting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [hasLiked, setHasLiked] = useState(
@@ -68,22 +74,22 @@ function PostCard({
     }
   };
 
-  // const handleAddComment = async () => {
-  //   if (!newComment.trim() || isCommenting) return;
-  //   try {
-  //     setIsCommenting(true);
-  //     const result = await createComment(post.id, newComment);
-  //     if (result?.success) {
-  //       toast.success("Comment posted successfully");
-  //       setNewComment("");
-  //     }
-  //   } catch (error) {
-  //     toast.error("Failed to add comment");
-  //     throw error;
-  //   } finally {
-  //     setIsCommenting(false);
-  //   }
-  // };
+  const handleAddComment = async () => {
+    if (!newComment.trim() || isCommenting) return;
+    try {
+      setIsCommenting(true);
+      const result = await createComment(post.id, newComment);
+      if (result?.success) {
+        toast.success("Comment posted successfully");
+        setNewComment("");
+      }
+    } catch (error) {
+      toast.error("Failed to add comment");
+      throw error;
+    } finally {
+      setIsCommenting(false);
+    }
+  };
 
   const handleDeletePost = async () => {
     if (isDeleting) return;
@@ -275,7 +281,7 @@ function PostCard({
                       onChange={(e) => setNewComment(e.target.value)}
                       className="min-h-[80px] resize-none"
                     />
-                    {/* <div className="flex justify-end mt-2">
+                    <div className="flex justify-end mt-2">
                       <Button
                         size="sm"
                         onClick={handleAddComment}
@@ -291,7 +297,7 @@ function PostCard({
                           </>
                         )}
                       </Button>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
               ) : (
