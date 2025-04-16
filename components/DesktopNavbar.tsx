@@ -10,6 +10,7 @@ async function DesktopNavbar() {
   return (
     <div className="hidden md:flex items-center space-x-4">
       {user && <SearchBar />}
+
       {/* <ModeToggle /> */}
 
       {!user && (
