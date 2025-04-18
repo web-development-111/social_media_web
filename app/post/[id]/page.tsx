@@ -3,7 +3,7 @@ import PostCard from "@/components/PostCard";
 
 type ParamsType = Promise<{ id: string }>;
 
-export async function PostDetail(props: { params: ParamsType }) {
+export default async function PostDetail(props: { params: ParamsType }) {
   const { id } = await props.params;
   const post = await getPostById(id);
   if (!post) return <p>Post not found.</p>;
@@ -13,5 +13,3 @@ export async function PostDetail(props: { params: ParamsType }) {
     </div>
   );
 }
-
-export default PostDetail;

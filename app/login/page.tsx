@@ -64,6 +64,7 @@ export default function SignInPage() {
                   className={`w-72 flex items-center justify-center font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md ${buttonStyle} ${hoverStyle}`}
                 >
                   {iconSrc && (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={iconSrc}
                       alt={provider.name}
