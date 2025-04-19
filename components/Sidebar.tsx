@@ -9,9 +9,11 @@ async function Sidebar() {
   if (!session || !session.user) {
     return <UnAuthenticatedSidebar />;
   } else {
-    <div className="space-y-6 p-4 border-red-500 border-2">
-      <WhoToFollow />
-    </div>;
+    return (
+      <div className="space-y-6 p-4 border-red-500 border-2">
+        <WhoToFollow />
+      </div>
+    );
   }
 }
 
