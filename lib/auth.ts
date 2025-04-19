@@ -22,42 +22,57 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
 
-        // Fetch the user from the database
-        const dbUser = await prisma.user.findUnique({
+        // First check if user exists with the email
+        const existingUser = await prisma.user.findUnique({
           where: {
-            id: user.id,
+            email: user.email ?? "",
           },
           select: {
+            id: true,
             username: true,
           },
         });
 
-        if (dbUser?.username) {
-          token.username = dbUser.username;
+        if (existingUser) {
+          // Use existing user's data
+          token.id = existingUser.id;
+          token.username = existingUser.username;
         } else {
-          // Generate a username if it doesn't exist
-          const baseUsername =
-            user.email?.split("@")[0] ||
-            user.name?.replace(/\s+/g, "") ||
-            "user";
-          const randomSuffix = Math.floor(Math.random() * 10000);
-          const generatedUsername = `${baseUsername}${randomSuffix}`;
-
-          // Create or update user with the generated username
-          await prisma.user.upsert({
-            where: { id: user.id },
-            create: {
+          // Check for username or create new user
+          const dbUser = await prisma.user.findUnique({
+            where: {
               id: user.id,
-              username: generatedUsername,
-              email: user.email ?? "",
-              name: user.name,
             },
-            update: {
-              username: generatedUsername,
+            select: {
+              username: true,
             },
           });
 
-          token.username = generatedUsername;
+          if (dbUser?.username) {
+            token.username = dbUser.username;
+          } else {
+            const baseUsername =
+              user.email?.split("@")[0] ||
+              user.name?.replace(/\s+/g, "") ||
+              "user";
+            const randomSuffix = Math.floor(Math.random() * 10000);
+            const generatedUsername = `${baseUsername}${randomSuffix}`;
+
+            await prisma.user.upsert({
+              where: { id: user.id },
+              create: {
+                id: user.id,
+                username: generatedUsername,
+                email: user.email ?? "",
+                name: user.name,
+              },
+              update: {
+                username: generatedUsername,
+              },
+            });
+
+            token.username = generatedUsername;
+          }
         }
       }
       return token;
