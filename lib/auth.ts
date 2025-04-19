@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id; // Add user ID to the token
+        token.id = user.id;
 
         // Fetch the user from the database
         const dbUser = await prisma.user.findUnique({
@@ -28,12 +28,36 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
           },
           select: {
-            username: true, // Only fetch the username
+            username: true,
           },
         });
 
-        if (dbUser) {
-          token.username = dbUser.username; // Add username to the token
+        if (dbUser?.username) {
+          token.username = dbUser.username;
+        } else {
+          // Generate a username if it doesn't exist
+          const baseUsername =
+            user.email?.split("@")[0] ||
+            user.name?.replace(/\s+/g, "") ||
+            "user";
+          const randomSuffix = Math.floor(Math.random() * 10000);
+          const generatedUsername = `${baseUsername}${randomSuffix}`;
+
+          // Create or update user with the generated username
+          await prisma.user.upsert({
+            where: { id: user.id },
+            create: {
+              id: user.id,
+              username: generatedUsername,
+              email: user.email ?? "",
+              name: user.name,
+            },
+            update: {
+              username: generatedUsername,
+            },
+          });
+
+          token.username = generatedUsername;
         }
       }
       return token;
