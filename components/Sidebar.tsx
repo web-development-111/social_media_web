@@ -2,13 +2,17 @@ import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import SignInButton from "./SignInButton";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import WhoToFollow from "./WhoToFollow";
 
 async function Sidebar() {
   const session = await getServerSession(authOptions);
   if (!session || !session.user) {
     return <UnAuthenticatedSidebar />;
+  } else {
+    <div className="space-y-6 p-4 border-red-500 border-2">
+      <WhoToFollow />
+    </div>;
   }
-  return <div className="space-y-6 p-4"></div>;
 }
 
 export default Sidebar;
