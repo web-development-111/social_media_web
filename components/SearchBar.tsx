@@ -52,12 +52,12 @@ const SearchBar = () => {
         onChange={(e) => setQuery(e.target.value)}
       />
       {loading && (
-        <p className="text-sm mt-2 absolute top-full left-0 w-full">
+        <p className="text-sm mt-2 absolute top-full left-0 w-full z-50">
           Loading...
         </p>
       )}
       {users.length > 0 && (
-        <div className="absolute w-full bg-white shadow-md rounded-lg mt-2 dark:bg-black">
+        <div className="absolute w-[120%] bg-white shadow-md rounded-lg mt-2 dark:bg-black z-50 max-h-[400px] overflow-y-auto">
           {users.map((user) => (
             <Card
               key={user.id}
