@@ -10,7 +10,7 @@ async function Sidebar() {
     return <UnAuthenticatedSidebar />;
   } else {
     return (
-      <div className="space-y-6 p-4 border-red-500 border-2">
+      <div className="space-y-6 p-4">
         <WhoToFollow />
       </div>
     );
