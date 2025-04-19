@@ -66,25 +66,26 @@ export async function getDbUserId() {
     return null;
   }
 
-  const userIdentifier = session.user.email; //
+  const email = session.user.email;
+  const username = session.user.username;
 
-  if (!userIdentifier) {
-    return null;
-  }
-  const user = await prisma.user.findUnique({
-    where: {
-      email: userIdentifier,
-    },
-    select: {
-      id: true,
-    },
-  });
-
-  if (!user) {
-    return null;
+  if (email) {
+    const userByEmail = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+    if (userByEmail) return userByEmail.id;
   }
 
-  return user.id;
+  if (username) {
+    const userByUsername = await prisma.user.findUnique({
+      where: { username },
+      select: { id: true },
+    });
+    if (userByUsername) return userByUsername.id;
+  }
+
+  return null;
 }
 
 export async function getRandomUsers() {
